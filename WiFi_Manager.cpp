@@ -565,6 +565,6 @@ void WiFiManager::onWiFi(bool startAP)
 	}
 	else
 	{
-		WiFi.begin();
+		WiFi.begin("MR.ROBOT","Senh@1q2w3e");
 	}
 }

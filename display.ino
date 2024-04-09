@@ -37,37 +37,41 @@ void startDisplay(){
   display.clearDisplay();
 }
 
-float incremento = 0.00;
+// float incremento = 0.00;
+
 void showDisplayData(){
-  incremento += 0.01;
+
+  // incremento += 0.01;
   display.clearDisplay();
 
   display.setTextSize(1);
   display.setTextColor(WHITE);
   display.setCursor(0, 0);
-  // display.println("Corrente 1: " + String(Irms1) + "A");
-  // display.setCursor(0, 10);
-  // display.println("Corrente 2: " + String(Irms2) + "A");
-  // display.setCursor(0, 20);
-  // display.println("Corrente 3: " + String(Irms3) + "A");
-  // display.setCursor(0, 30);
-  // display.println("Tensao 1: " + String(Vrms1) + "V");
-  // display.setCursor(0, 40);
-  // display.println("Tensao 2: " + String(Vrms2) + "V");
-  // display.setCursor(0, 50);
-  // display.println("Tensao 3: " + String(Vrms3) + "V");
-  display.setCursor(0, 0);
-  display.println(horaReboot + ": ");
+  display.print("IP:" + WiFi.localIP().toString());
   display.setCursor(0, 10);
-  display.println(motivoReboot);
-  display.setCursor(0, 20);
-  display.println("Tensao 1: " + String(Vrms1+incremento) + "V");
+  display.print("MAC:" + String(WiFi.macAddress()));
   display.setCursor(0, 30);
-  display.println("Tensao 2: " + String(Vrms2) + "V");
+  display.print("T1:" + String(Vrms1) + "V ");
+  display.println("C1:" + String(Irms1) + "A");
   display.setCursor(0, 40);
-  display.println("Tensao 3: " + String(Vrms3) + "V");
+  display.print("T2:" + String(Vrms2) + "V ");
+  display.println("C2:" + String(Irms2) + "A");
+  display.setCursor(0, 50);
+  display.print("T3:" + String(Vrms3) + "V ");
+  display.println("C3:" + String(Irms3) + "A");
 
- 
+  //testes
+  // display.setCursor(0, 0);
+  // display.println(horaReboot + ": ");
+  // display.setCursor(0, 10);
+  // display.println(motivoReboot);
+  // display.setCursor(0, 20);
+  // display.println("Tensao 1: " + String(Vrms1+incremento) + "V");
+  // display.setCursor(0, 30);
+  // display.println("Tensao 2: " + String(Vrms2) + "V");
+  // display.setCursor(0, 40);
+  // display.println("Tensao 3: " + String(Vrms3) + "V");
+
   display.display();
 }
 

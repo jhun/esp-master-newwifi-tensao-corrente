@@ -10,7 +10,6 @@
 #define NVS_RASP_IP_KEY "r_ip"
 #define DEBUG 1
 
-#define BOMBA_PIN LED_BUILTIN
 
 AsyncWebServer webServer(80);
 String IPraspberry;
@@ -36,7 +35,6 @@ extern double Vrms3;
 
 
 void startConnection(){
-  pinMode(BOMBA_PIN, OUTPUT);
   loadConfigs();
   webServer.on("/cmd", HTTP_POST, HandlerCmdFromRaspberry);
   webServer.on("/custom_cfg", HTTP_POST, SaveCustomCfg);
@@ -94,7 +92,7 @@ void HandlerCmdFromRaspberry(AsyncWebServerRequest *request)
             {
                 if (prop.equals("on_off"))
                 {
-                    digitalWrite(BOMBA_PIN, value.equals("1"));
+                    // digitalWrite(BOMBA_PIN, value.equals("1"));
                 }
             }
         }
@@ -106,24 +104,18 @@ void HandlerCmdFromRaspberry(AsyncWebServerRequest *request)
 
 String deviceStatus()
 {
-
-    int tensao = rand() % 500;
-    int corrente = rand() % 100;
-    int vazao = rand() % 20;
-    int abertura = 38;
-    String on_off = digitalRead(BOMBA_PIN) == HIGH ? "true" : "false";
-    struct tm timeinfo;
-    getLocalTime(&timeinfo);
-    char datetime[30];
-    size_t s = strftime(datetime, sizeof(datetime), "%Y-%m-%dT%H:%M:%S", &timeinfo);
-    String status = "{\"bomba\":{\"datetime\":\"" + String(datetime) +
-                    "\",\"tensao1\":" + String(Vrms1) +
-                    ",\"tensao2\":" + String(Vrms2) +
-                    ",\"tensao3\":" + String(Vrms3) +
-                    ",\"corrente1\":" + String(Irms1) +
-                    ",\"corrente2\":" + String(Irms2) +
-                    ",\"corrente3\":" + String(Irms3) +
-                   "}}";
+  struct tm timeinfo;
+  getLocalTime(&timeinfo);
+  char datetime[30];
+  size_t s = strftime(datetime, sizeof(datetime), "%Y-%m-%dT%H:%M:%S", &timeinfo);
+  String status = "{\"bomba\":{\"datetime\":\"" + String(datetime) +
+                  "\",\"tensao1\":" + String(Vrms1) +
+                  ",\"tensao2\":" + String(Vrms2) +
+                  ",\"tensao3\":" + String(Vrms3) +
+                  ",\"corrente1\":" + String(Irms1) +
+                  ",\"corrente2\":" + String(Irms2) +
+                  ",\"corrente3\":" + String(Irms3) +
+                  "}}";
     return status;
 }
 
@@ -131,11 +123,14 @@ void sendValues(){
 
   if ((esp_timer_get_time() / 1000ULL) - lastUpdate > 10000)
   {
+    WiFi._setStatus(WL_NO_SHIELD);
     wifi_manager.onWiFi();
     lastUpdate = esp_timer_get_time() / 1000ULL;
-    while(WiFi.status() != WL_CONNECTED){
+    while(WiFi.waitForConnectResult() != WL_CONNECTED)
+    {
+      wifi_manager.onWiFi();
       Serial.println("tentando reconectar para enviar status...");
-      delay(100);
+      delay(1000);
     }
     send_status();
   }
@@ -143,7 +138,6 @@ void sendValues(){
 
 void send_status()
 {
-        StateONOFF = digitalRead(BOMBA_PIN) == HIGH;
         if (IPraspberry.isEmpty())
             return;
         if (!WiFi.isConnected())

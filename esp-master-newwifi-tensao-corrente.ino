@@ -94,8 +94,6 @@ void setup()
         break;
     }
 
-   
-
     while(wifi_manager.apIsActive){
       showConnectionsData(String((char *)currentConfig.ssid),String((char *)currentConfig.password),String((char *)currentConfig.ipAP),String((char *)currentConfig.wwwuser),String((char *)currentConfig.wwwpass));
       delay(1000);
@@ -106,11 +104,14 @@ void loop()
 {
   wifi_manager.loop();
   wifi_manager.offWiFi();
-  while(WiFi.status() == WL_CONNECTED){
+  while(WiFi.waitForConnectResult() == WL_CONNECTED)
+  {
+    wifi_manager.offWiFi();
     Serial.println("tentando desconectar para calcular sensores...");
-    delay(100);
+    delay(1000);
   }
   calculateEnergyMonitor();
-  showDisplayData();
   sendValues();
+  showDisplayData();
+
 }
